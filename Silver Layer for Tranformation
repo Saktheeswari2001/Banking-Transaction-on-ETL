@@ -1,0 +1,25 @@
+show = transactions_df.show()
+
+from pyspark.sql.functions import col
+clean_df = transactions_df.dropna(subset=["transaction_id","customer_id","amount","date","type"])
+clean_df = clean_df.filter(col("amount") > 0)
+
+
+from pyspark.sql.functions import desc
+tag_highvalue = transactions_df.orderBy(desc("amount")).show()
+
+
+from pyspark.sql.functions import sum
+tags_highvalue = transactions_df.groupBy("customer_id") \
+    .agg(sum("amount").alias("total_amount")) 
+
+tags_highvalue.show()
+
+from pyspark.sql.functions import when
+high_value = transactions_df.withColumn("high_value",when(col("amount") > 1000, 1).otherwise(0))
+high_value.show()
+
+#filterreview_df
+filter_df = transactions_df.filter(transactions_df.customer_id == 101).select("amount","date","type").show()
+
+cachedf = customers_df.cache().show()
