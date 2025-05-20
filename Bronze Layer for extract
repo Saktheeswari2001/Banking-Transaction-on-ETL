@@ -1,0 +1,42 @@
+transactions.csv: transaction_id, customer_id, amount, date, type
+
+customers.csv: customer_id, name, state, account_status
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType, DateType
+from datetime import date
+
+transactions_data = [
+    (1, 101, 250.75, date(2024, 5, 1), "debit"),
+    (2, 102, 1200.00, date(2024, 5, 2), "credit"),
+    (3, 103, 560.40, date(2024, 5, 3), "debit"),
+    (4, 101, 300.00, date(2024, 5, 4), "credit"),
+    (5, 104, 80.00, date(2024, 5, 5), "debit"),
+]
+transactions_schema = StructType([
+    StructField("transaction_id", IntegerType(), True),
+    StructField("customer_id", IntegerType(), True),
+    StructField("amount", FloatType(), True),
+    StructField("date", DateType(), True),
+    StructField("type", StringType(), True)
+])
+transactions_df = spark.createDataFrame(transactions_data, schema=transactions_schema)
+#transactions_df =  spark.createDataframe(transactions_data,schema = transactions_schema)
+transactions_df.show()
+
+customers_data = [
+    (101, "Alice", "CA", "active"),
+    (102, "Bob", "NY", "inactive"),
+    (103, "Charlie", "TX", "active"),
+    (104, "Diana", "WA", "suspended"),
+]
+customers_schema = StructType([
+    StructField("customer_id", IntegerType(), True),
+    StructField("name", StringType(), True),
+    StructField("state", StringType(), True),
+    StructField("account_status", StringType(), True)
+])
+
+#transactions_df = spark.createDataFrame(transactions_data, schema=transactions_schema)
+customers_df = spark.createDataFrame(customers_data, schema = customers_schema)
+customers_df.show()
